@@ -9,7 +9,7 @@
  *
  */
 
-(function($) {
+;(function($) {
 
     $.fn.liquidSlider = function(options) {
 
