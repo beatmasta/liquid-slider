@@ -14,7 +14,7 @@ simple call:
         $("ul#slideshow").liquidSlider();
     });
 </script>
-<ul>
+<ul id="slideshow">
     <li><img src="/image1.png" /></li>
     <li><img src="/image2.png" /></li>
     <li><img src="/image3.png" /></li>
