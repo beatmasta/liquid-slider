@@ -6,31 +6,7 @@
 * Copyright (c) 2013 Alex Vanyan (http://alex-v.net)
 * Version: 1.0
 * Requires: jQuery v1.4.2+
-*
-* Options:
-*   | initialResizeSpeed: time value in milliseconds to process resizing for the 1st set slide
-*   | resizeSpeed:        time value in milliseconds to process resizing for other slides
-*   |                     (after next/prev navigation)
-*   | slideSpeed:         time value in milliseconds to process next/previous navigation
-*   | navigation:         true | false - to show next/previous navigation or not
-*   | prevButtonLabel:    string value to have as a label for previous slide button
-*   |                     (leave empty to have empty button, e.g. if you have image instead
-*   |                     of character/text)
-*   | nextButtonLabel:    string value to have as a label for next slide button
-*   |                     (leave empty to have empty button, e.g. if you have image instead
-*   |                     of character/text)
-* Examples:
-*   | simple call:
-*   |                     <script type="text/javascript">
-*   |                         $(document).ready(function() {
-*   |                             $("ul#slideshow").liquidSlider();
-*   |                         });
-*   |                     </script>
-*   |                     <ul id="slideshow">
-*   |                         <li><img src="/image1.png" /></li>
-*   |                         <li><img src="/image2.png" /></li>
-*   |                         <li><img src="/image3.png" /></li>
-*   |                     </ul>
+* 
 */
 
 (function($) {
@@ -45,6 +21,7 @@
                 resizeSpeed: 100,
                 slideSpeed: 150,
                 navigation: true,
+                removeNavOnLastSlide: true,
                 prevButtonLabel: "",
                 nextButtonLabel: ""
             };
@@ -79,36 +56,52 @@
                     margin: 0,
                     padding: 0
                 });
+                // allow slider to preload before being shown
                 sliderWrapper.css({
-                    position: "relative",
-                    overflow: "hidden",
-                    margin: 0,
-                    padding: 0
+                    position: "absolute",
+                    left: "-50000px",
+                    top: "-50000px"
                 });
-
-                // auto-resize the slider for the 1st set slide
-                resizeTo(opts.initialResizeSpeed, sliderWrapper, firstSlideIndex);
-                // check if "navigation" option is enabled to add next/prev buttons
-                if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
+                
+                var imagesLoaded = 0;
+                var checkInit = function() {
+                    if ( imagesLoaded !== sliderImages.length ) return false;
+                    sliderWrapper.css({
+                        position: "relative",
+                        overflow: "hidden",
+                        left: "auto",
+                        top: "auto",
+                        margin: 0,
+                        padding: 0
+                    });
+                    // auto-resize the slider for the 1st set slide
+                    resizeTo(opts.initialResizeSpeed, sliderWrapper, firstSlideIndex);
+                    // check if "navigation" option is enabled to add next/prev buttons
+                    if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
+                    slideIndexCheck(sliderWrapper);
+                };
+                
+                // attach the onLoad event handler to the slider images
+                sliderImages.bind("load", function() {
+                    imagesLoaded++;
+                    checkInit();
+                });
             };
 
-            // default $.animate() callback to check whether animation is in progress
-            // to postpone next one if it is...
-            var animationInProgress = false;
-            var animationPostponeTime = 2000;
-            var defaultAnimBegin = function() { animationInProgress = true };
-            var defaultAnimCallback = function() { animationInProgress = false };
+            // default $.animate() begin and callback hooks
+            var defaultAnimBegin = function() {};
+            var defaultAnimCallback = function() {};
 
             // helper method: resizes slide scope to slide with index "slideIndex" with "speed" milliseconds
             var resizeTo = function(speed, sliderWrapper, slideIndex) {
-                // check if "animationInProgress" and postpone next one by "animationPostponeTime" if it is...
-                //if ( animationInProgress ) return false;
                 var imageObject = sliderWrapper.children().eq(0).children().eq(slideIndex).find("> img");
-                defaultAnimBegin();
+                defaultAnimBegin.call();
                 sliderWrapper.animate({
                     width: imageObject.outerWidth(),
                     height: imageObject.outerHeight()
-                }, parseInt(speed), defaultAnimCallback);
+                }, parseInt(speed), function() {
+                    defaultAnimCallback.call();
+                });
             };
 
             // method to add prev/next buttons to the slider
@@ -127,24 +120,41 @@
 
             // slide nagivation generic function - direction depends on "delta" var
             var navigateToSlide = function(opts, sliderWrapper, delta) {
-                // check if "animationInProgress" and postpone next one by "animationPostponeTime" if it is...
-                //if ( animationInProgress ) return false;
                 var slidesWrapper = sliderWrapper.children().eq(0);
                 var currentSlideIndex = parseInt(sliderWrapper.attr("data-cslide")) - 1;
                 var upcomingSlideIndex = (currentSlideIndex + (delta * 1));
                 // check if the upcoming slide exists and return "false" if it does not
                 if ( upcomingSlideIndex > slidesWrapper.children().length - 1 || upcomingSlideIndex < 0 ) return false;
                 // next/prev animation is processed here...
-                defaultAnimBegin();
+                defaultAnimBegin.call();
                 slidesWrapper.animate({
                     left: "-" + (slidesWrapper.children().eq(upcomingSlideIndex).offset().left - slidesWrapper.offset().left)
                 }, opts.slideSpeed, function() {
+                    var newCurrentSlideIndex = upcomingSlideIndex + 1;
                     // set current slide index attribute to the wrapper after slide navigation is complete
-                    sliderWrapper.attr("data-cslide", upcomingSlideIndex + 1);
-                    defaultAnimCallback();
+                    sliderWrapper.attr("data-cslide", newCurrentSlideIndex);
+                    slideIndexCheck(sliderWrapper);
+                    defaultAnimCallback.call();
                 });
                 // start resizing the slide scope in a parallel way to the next/prev animation
                 resizeTo(opts.resizeSpeed, sliderWrapper, upcomingSlideIndex);
+            };
+            
+            var slideIndexCheck = function(sliderWrapper) {
+                if ( true === opts.removeNavOnLastSlide ) {
+                    switch ( parseInt(sliderWrapper.attr("data-cslide")) ) {
+                        case 1:
+                            sliderWrapper.prev(".liquid-prev").hide();
+                            break;
+                        case sliderWrapper.children().eq(0).children().length:
+                            sliderWrapper.next(".liquid-next").hide();
+                            break;
+                        default:
+                            sliderWrapper.prev(".liquid-prev").show();
+                            sliderWrapper.next(".liquid-next").show();
+                            break;
+                    }
+                }
             };
 
             // check to see if no element exists in DOM by the time plugin was called

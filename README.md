@@ -21,10 +21,11 @@ Usage
 Options
 =======
 
-**initialResizeSpeed** - time value in milliseconds to process resizing for the 1st set slide  
-**resizeSpeed** - time value in milliseconds to process resizing for other slidesn(after next/prev navigation)  
-**slideSpeed** - time value in milliseconds to process next/previous navigation  
-**navigation** - true | false - to show next/previous navigation or not  
-**prevButtonLabel** - string value to have as a label for previous slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
-**nextButtonLabel** - string value to have as a label for next slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
+**initialResizeSpeed** - [default: 100] - time value in milliseconds to process resizing for the 1st set slide  
+**resizeSpeed** - [default: 100] - time value in milliseconds to process resizing for other slidesn(after next/prev navigation)  
+**slideSpeed** - [default: 150] - time value in milliseconds to process next/previous navigation  
+**navigation** - true|false [default: true] - to show next/previous navigation or not  
+**prevButtonLabel** - [default: ""] - string value to have as a label for previous slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
+**nextButtonLabel** - [default: ""] - string value to have as a label for next slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
+**removeNavOnLastSlide** - true|false [default: true] - specifies whether to remove the next/prev navigation control button when the last/first slide has been reached
 
