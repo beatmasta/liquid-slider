@@ -34,9 +34,9 @@
                 var firstSlideIndex = 0;
                 var sliderWrapper = $this.wrap( $("<div />").attr("class", "liquid-wrap") ).parent();
                 var slideWrappers = $this.children();
-                var sliderImages = $this.children().find("> img");
+                var sliderImages = $this.children().find("img");
                 var currentSlideWrap = slideWrappers.eq(firstSlideIndex);
-                var currentSlideImg = currentSlideWrap.find("> img");
+                var currentSlideImg = currentSlideWrap.find("img");
 
                 // set current slide (attribute data-cslide to the top-level parent) to 1st set slide
                 sliderWrapper.attr("data-cslide", parseInt(firstSlideIndex) + 1);
@@ -94,7 +94,7 @@
 
             // helper method: resizes slide scope to slide with index "slideIndex" with "speed" milliseconds
             var resizeTo = function(speed, sliderWrapper, slideIndex) {
-                var imageObject = sliderWrapper.children().eq(0).children().eq(slideIndex).find("> img");
+                var imageObject = sliderWrapper.children().eq(0).children().eq(slideIndex).find("img");
                 defaultAnimBegin.call();
                 sliderWrapper.animate({
                     width: imageObject.outerWidth(),
