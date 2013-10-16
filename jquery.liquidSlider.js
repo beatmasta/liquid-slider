@@ -24,7 +24,14 @@
                 removeNavOnLastSlide: true,
                 prevButtonLabel: "",
                 nextButtonLabel: "",
-				onLoad: null
+                onLoad: null,
+				onImageLoad: null,
+                onNextSlide: null,
+                onPrevSlide: null,
+                onSlideChange: null,
+                onBeforeNextSlide: null,
+                onBeforePrevSlide: null,
+                onBeforeSlideChange: null
             };
             
             var opts = $.extend( {}, defaults, options );
@@ -32,6 +39,7 @@
 
             // constructor
             var init = function(opts, $this) {
+
                 var firstSlideIndex = 0;
                 var sliderWrapper = $this.wrap( $("<div />").attr("class", "liquid-wrap") ).parent();
                 var slideWrappers = $this.children();
@@ -41,6 +49,7 @@
 
                 // set current slide (attribute data-cslide to the top-level parent) to 1st set slide
                 sliderWrapper.attr("data-cslide", parseInt(firstSlideIndex) + 1);
+                slideWrappers.eq(parseInt(firstSlideIndex)).addClass("active");
 
                 // slideshow wrapper and slide css goes here...
                 $this.css({
@@ -52,11 +61,13 @@
                     left: 0,
                     width: $(window).width()
                 });
+
                 slideWrappers.css({
                     float: "left",
                     margin: 0,
                     padding: 0
                 });
+
                 // allow slider to preload before being shown
                 sliderWrapper.css({
                     position: "absolute",
@@ -67,6 +78,11 @@
                 var imagesLoaded = 0;
                 var checkInit = function() {
                     if ( imagesLoaded !== sliderImages.length ) return false;
+					var childrenWidth = 0;
+                    $this.children().each(function() {
+                        childrenWidth += $(this).outerWidth(true);
+                    });
+					$this.css("width", childrenWidth);
                     sliderWrapper.css({
                         position: "relative",
                         overflow: "hidden",
@@ -81,13 +97,12 @@
                     if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
                     slideIndexCheck(sliderWrapper);
 
-					if ( typeof opts.onLoad === "function" ) {
-						opts.onLoad.call();
-					}
+					if ( typeof opts.onLoad === "function" ) opts.onLoad.call();
                 };
                 
                 // attach the onLoad event handler to the slider images
                 sliderImages.bind("load", function() {
+					if ( typeof opts.onImageLoad === "function" ) opts.onImageLoad.call();
                     imagesLoaded++;
                     checkInit();
                 });
@@ -128,8 +143,19 @@
                 var slidesWrapper = sliderWrapper.children().eq(0);
                 var currentSlideIndex = parseInt(sliderWrapper.attr("data-cslide")) - 1;
                 var upcomingSlideIndex = (currentSlideIndex + (delta * 1));
+
+                // callback variables
+                var navName = (-1 === delta ? "Prev" : "Next");
+                var beforeCb = opts['onBefore' + navName + 'Slide'];
+                var afterCb = opts['on' + navName + 'Slide'];
+                var gBeforeCb = opts.onBeforeSlideChange;
+                var gAfterCb = opts.onSlideChange;
+                
                 // check if the upcoming slide exists and return "false" if it does not
                 if ( upcomingSlideIndex > slidesWrapper.children().length - 1 || upcomingSlideIndex < 0 ) return false;
+                // pre-animation callbacks
+                if ( typeof gBeforeCb === "function" ) gBeforeCb.call();
+                if ( typeof beforeCb === "function" ) beforeCb.call();
                 // next/prev animation is processed here...
                 defaultAnimBegin.call();
                 slidesWrapper.animate({
@@ -139,6 +165,10 @@
                     // set current slide index attribute to the wrapper after slide navigation is complete
                     sliderWrapper.attr("data-cslide", newCurrentSlideIndex);
                     slideIndexCheck(sliderWrapper);
+					slidesWrapper.children().removeClass("active").eq(newCurrentSlideIndex - 1).addClass("active");
+                    // post-animation callbacks
+                    if ( typeof gAfterCb === "function" ) gAfterCb.call();
+                    if ( typeof afterCb === "function" ) afterCb.call();
                     defaultAnimCallback.call();
                 });
                 // start resizing the slide scope in a parallel way to the next/prev animation
