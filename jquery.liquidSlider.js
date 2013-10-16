@@ -23,7 +23,8 @@
                 navigation: true,
                 removeNavOnLastSlide: true,
                 prevButtonLabel: "",
-                nextButtonLabel: ""
+                nextButtonLabel: "",
+				onLoad: null
             };
             
             var opts = $.extend( {}, defaults, options );
@@ -79,6 +80,10 @@
                     // check if "navigation" option is enabled to add next/prev buttons
                     if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
                     slideIndexCheck(sliderWrapper);
+
+					if ( typeof opts.onLoad === "function" ) {
+						opts.onLoad.call();
+					}
                 };
                 
                 // attach the onLoad event handler to the slider images

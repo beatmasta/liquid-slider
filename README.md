@@ -29,3 +29,8 @@ Options
 **nextButtonLabel** - [default: ""] - string value to have as a label for next slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
 **removeNavOnLastSlide** - true|false [default: true] - specifies whether to remove the next/prev navigation control button when the last/first slide has been reached
 
+Callbacks
+=======
+
+**onLoad** - [default: null] - callback function called on plugin initialized state (when all images have been loaded and slider is ready to use)
+
