@@ -97,12 +97,12 @@
                     if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
                     slideIndexCheck(sliderWrapper);
 
-					if ( typeof opts.onLoad === "function" ) opts.onLoad.call();
+					if ( typeof opts.onLoad === "function" ) opts.onLoad.call($this);
                 };
                 
                 // attach the onLoad event handler to the slider images
                 sliderImages.bind("load", function() {
-					if ( typeof opts.onImageLoad === "function" ) opts.onImageLoad.call();
+					if ( typeof opts.onImageLoad === "function" ) opts.onImageLoad.call($(this));
                     imagesLoaded++;
                     checkInit();
                 });
@@ -114,13 +114,14 @@
 
             // helper method: resizes slide scope to slide with index "slideIndex" with "speed" milliseconds
             var resizeTo = function(speed, sliderWrapper, slideIndex) {
-                var imageObject = sliderWrapper.children().eq(0).children().eq(slideIndex).find("img");
-                defaultAnimBegin.call();
+                var slidesWrapper = sliderWrapper.children().eq(0);
+                var imageObject = slidesWrapper.children().eq(slideIndex).find("img");
+                defaultAnimBegin.call(slidesWrapper);
                 sliderWrapper.animate({
                     width: imageObject.outerWidth(),
                     height: imageObject.outerHeight()
                 }, parseInt(speed), function() {
-                    defaultAnimCallback.call();
+                    defaultAnimCallback.call(slidesWrapper);
                 });
             };
 
@@ -154,10 +155,10 @@
                 // check if the upcoming slide exists and return "false" if it does not
                 if ( upcomingSlideIndex > slidesWrapper.children().length - 1 || upcomingSlideIndex < 0 ) return false;
                 // pre-animation callbacks
-                if ( typeof gBeforeCb === "function" ) gBeforeCb.call();
-                if ( typeof beforeCb === "function" ) beforeCb.call();
+                if ( typeof gBeforeCb === "function" ) gBeforeCb.call(slidesWrapper);
+                if ( typeof beforeCb === "function" ) beforeCb.call(slidesWrapper);
                 // next/prev animation is processed here...
-                defaultAnimBegin.call();
+                defaultAnimBegin.call(slidesWrapper);
                 slidesWrapper.animate({
                     left: "-" + (slidesWrapper.children().eq(upcomingSlideIndex).offset().left - slidesWrapper.offset().left)
                 }, opts.slideSpeed, function() {
@@ -167,9 +168,9 @@
                     slideIndexCheck(sliderWrapper);
 					slidesWrapper.children().removeClass("active").eq(newCurrentSlideIndex - 1).addClass("active");
                     // post-animation callbacks
-                    if ( typeof gAfterCb === "function" ) gAfterCb.call();
-                    if ( typeof afterCb === "function" ) afterCb.call();
-                    defaultAnimCallback.call();
+                    if ( typeof gAfterCb === "function" ) gAfterCb.call(slidesWrapper);
+                    if ( typeof afterCb === "function" ) afterCb.call(slidesWrapper);
+                    defaultAnimCallback.call(slidesWrapper);
                 });
                 // start resizing the slide scope in a parallel way to the next/prev animation
                 resizeTo(opts.resizeSpeed, sliderWrapper, upcomingSlideIndex);
