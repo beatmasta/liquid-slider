@@ -1,13 +1,13 @@
 /*
-* LiquidSlider - jQuery Plugin
-* Slider plugin to provide flexible dimensions (both width and height)
-* according to current item content on each slide step.
-*
-* Copyright (c) 2013 Alex Vanyan (http://alex-v.net)
-* Version: 1.1
-* Requires: jQuery v1.4.2+
-* 
-*/
+ * LiquidSlider - jQuery Plugin
+ * Slider plugin to provide flexible dimensions (both width and height)
+ * according to current item content on each slide step.
+ *
+ * Copyright (c) 2013 Alex Vanyan (http://alex-v.net)
+ * Version: 1.1
+ * Requires: jQuery v1.4.2+
+ *
+ */
 
 (function($) {
 
@@ -24,6 +24,7 @@
                 removeNavOnLastSlide: true,
                 prevButtonLabel: "",
                 nextButtonLabel: "",
+                contentSelectors: "img, iframe",
                 onLoad: null,
                 onContentItemLoad: null,
                 onNextSlide: null,
@@ -33,7 +34,7 @@
                 onBeforePrevSlide: null,
                 onBeforeSlideChange: null
             };
-            
+
             var opts = $.extend( {}, defaults, options );
             var $this = $(this);
 
@@ -43,18 +44,18 @@
                 var firstSlideIndex = 0;
                 var sliderWrapper = $this.wrap( $("<div />").attr("class", "liquid-wrap") ).parent();
                 var slideWrappers = $this.children();
-                var sliderContentItems = $this.children().find("img, iframe");
+                var sliderContentItems = $this.children().find(opts.contentSelectors);
                 var isInitialized = false;
 
                 // attach the onLoad event handler to the slider content items
                 var scLength = sliderContentItems.not(function() { return this.complete; })
                     .bind("load", function() {
-                    if ( typeof opts.onContentItemLoad === "function" ) opts.onContentItemLoad.call($(this));
-                    if ( --scLength === 0 ) checkStartInit();
-                }).length;
+                        if ( typeof opts.onContentItemLoad === "function" ) opts.onContentItemLoad.call($(this));
+                        if ( --scLength === 0 ) checkStartInit();
+                    }).length;
 
                 var currentSlideWrap = slideWrappers.eq(firstSlideIndex);
-                var currentSlideContentItem = currentSlideWrap.find("img, iframe");
+                var currentSlideContentItem = currentSlideWrap.find(opts.contentSelectors);
 
                 // set current slide (attribute data-cslide to the top-level parent) to 1st set slide
                 sliderWrapper.attr("data-cslide", parseInt(firstSlideIndex) + 1);
@@ -86,11 +87,7 @@
 
                 var checkStartInit = function() {
                     isInitialized = true;
-					var childrenWidth = 0;
-                    $this.children().each(function() {
-                        childrenWidth += $(this).outerWidth(true);
-                    });
-					$this.css("width", childrenWidth);
+                    checkSlidesWrapperWidth();
                     sliderWrapper.css({
                         position: "relative",
                         overflow: "hidden",
@@ -105,9 +102,17 @@
                     if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
                     slideIndexCheck(sliderWrapper);
 
-					if ( typeof opts.onLoad === "function" ) opts.onLoad.call($this);
+                    if ( typeof opts.onLoad === "function" ) opts.onLoad.call($this);
                 };
                 if ( scLength === 0 && ! isInitialized ) checkStartInit();
+            };
+
+            var checkSlidesWrapperWidth = function() {
+                var childrenWidth = 0;
+                $this.children().each(function() {
+                    childrenWidth += $(this).outerWidth(true);
+                });
+                $this.css("width", childrenWidth);
             };
 
             // default $.animate() begin and callback hooks
@@ -153,12 +158,13 @@
                 var afterCb = opts['on' + navName + 'Slide'];
                 var gBeforeCb = opts.onBeforeSlideChange;
                 var gAfterCb = opts.onSlideChange;
-                
+
                 // check if the upcoming slide exists and return "false" if it does not
                 if ( upcomingSlideIndex > slidesWrapper.children().length - 1 || upcomingSlideIndex < 0 ) return false;
                 // pre-animation callbacks
                 if ( typeof gBeforeCb === "function" ) gBeforeCb.call(slidesWrapper);
                 if ( typeof beforeCb === "function" ) beforeCb.call(slidesWrapper);
+
                 // next/prev animation is processed here...
                 defaultAnimBegin.call(slidesWrapper);
                 slidesWrapper.animate({
@@ -168,16 +174,17 @@
                     // set current slide index attribute to the wrapper after slide navigation is complete
                     sliderWrapper.attr("data-cslide", newCurrentSlideIndex);
                     slideIndexCheck(sliderWrapper);
-					slidesWrapper.children().removeClass("active").eq(newCurrentSlideIndex - 1).addClass("active");
+                    slidesWrapper.children().removeClass("active").eq(newCurrentSlideIndex - 1).addClass("active");
                     // post-animation callbacks
                     if ( typeof gAfterCb === "function" ) gAfterCb.call(slidesWrapper);
                     if ( typeof afterCb === "function" ) afterCb.call(slidesWrapper);
                     defaultAnimCallback.call(slidesWrapper);
                 });
+
                 // start resizing the slide scope in a parallel way to the next/prev animation
-                resizeTo(opts.resizeSpeed, sliderWrapper, upcomingSlideIndex);
+                resizeTo(opts.resizeSpeed, slidesWrapper.parent(), upcomingSlideIndex);
             };
-            
+
             var slideIndexCheck = function(sliderWrapper) {
                 if ( true === opts.removeNavOnLastSlide ) {
                     switch ( parseInt(sliderWrapper.attr("data-cslide")) ) {
@@ -200,12 +207,29 @@
                 // if not check the browser to have a console in window top-level object
                 if ( typeof window.console !== "undefined" ) {
                     // raise some error here
-                    console.log("$.liquidSlider() cannot be called on a non-existing element");
+                    console.log("liquidSlider() cannot be called on a non-existing element [should be called like $('.example').liquidSlider()]");
                 }
                 return false;
             }
 
+            // everything starts here...
             init(opts, $this);
+
+            // responsive design compatibility
+            // (width and offset change on window resize)
+            var resizeTimeout;
+            $(window).bind("resize", function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resizeHandler, 250);
+            });
+            var resizeHandler = function() {
+                var sliderWrapper = $this.parent();
+                var cSlide = parseInt(sliderWrapper.attr("data-cslide"));
+                var cSlideObj = $this.children().eq(cSlide - 1);
+                checkSlidesWrapperWidth();
+                $this.css("left", ("-" + (cSlideObj.offset().left - $this.offset().left)) + "px");
+                sliderWrapper.width(cSlideObj.outerWidth());
+            };
 
         });
 
