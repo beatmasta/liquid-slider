@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: url("img/background.png") top left repeat transparent;
+    text-align: center;
+}
+
+.clear {
+    clear: both;
+}
+
+.slider-wrap-1, .slider-wrap-2 {
+    clear: both;
+    position: relative;
+    margin: 60px auto 0;
+    display: inline-block;
+}
+
+.slider-wrap-1 .liquid-wrap,
+.slider-wrap-2 .liquid-wrap {
+    margin-left: 92px !important;
+    margin-right: 50px !important;
+}
+
+.liquid-prev, .liquid-next {
+    color: #6699FF;
+    display: inline;
+    float: left;
+    font-family: Tahoma;
+    font-size: 20px;
+    text-decoration: none;
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+}
+
+.liquid-prev {
+    left: 0;
+}
+
+.liquid-next {
+    right: 0;
+}
+
+.liquid-prev:hover, .liquid-next:hover {
+    color: #444444;
+}

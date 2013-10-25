@@ -1,7 +1,7 @@
 /*
 * LiquidSlider - jQuery Plugin
-* Image slider plugin to provide flexible dimensions (both width and height)
-* on each slide step.
+* Slider plugin to provide flexible dimensions (both width and height)
+* according to current item content on each slide step.
 *
 * Copyright (c) 2013 Alex Vanyan (http://alex-v.net)
 * Version: 1.1
@@ -25,7 +25,7 @@
                 prevButtonLabel: "",
                 nextButtonLabel: "",
                 onLoad: null,
-				onImageLoad: null,
+				onContentItemsLoaded: null,
                 onNextSlide: null,
                 onPrevSlide: null,
                 onSlideChange: null,
@@ -43,9 +43,18 @@
                 var firstSlideIndex = 0;
                 var sliderWrapper = $this.wrap( $("<div />").attr("class", "liquid-wrap") ).parent();
                 var slideWrappers = $this.children();
-                var sliderImages = $this.children().find("img");
+                var sliderContentItems = $this.children().find("img, iframe");
+                var isInitialized = false;
+
+                // attach the onLoad event handler to the slider content items
+                var scLength = sliderContentItems.not(function() { return this.complete; })
+                    .bind("load", function() {
+                    if ( typeof opts.onContentItemsLoaded === "function" ) opts.onContentItemsLoaded.call($(this));
+                    if ( --scLength === 0 ) checkStartInit();
+                }).length;
+
                 var currentSlideWrap = slideWrappers.eq(firstSlideIndex);
-                var currentSlideImg = currentSlideWrap.find("img");
+                var currentSlideContentItem = currentSlideWrap.find("img, iframe");
 
                 // set current slide (attribute data-cslide to the top-level parent) to 1st set slide
                 sliderWrapper.attr("data-cslide", parseInt(firstSlideIndex) + 1);
@@ -74,10 +83,9 @@
                     left: "-50000px",
                     top: "-50000px"
                 });
-                
-                var imagesLoaded = 0;
-                var checkInit = function() {
-                    if ( imagesLoaded !== sliderImages.length ) return false;
+
+                var checkStartInit = function() {
+                    isInitialized = true;
 					var childrenWidth = 0;
                     $this.children().each(function() {
                         childrenWidth += $(this).outerWidth(true);
@@ -99,13 +107,7 @@
 
 					if ( typeof opts.onLoad === "function" ) opts.onLoad.call($this);
                 };
-                
-                // attach the onLoad event handler to the slider images
-                sliderImages.bind("load", function() {
-					if ( typeof opts.onImageLoad === "function" ) opts.onImageLoad.call($(this));
-                    imagesLoaded++;
-                    checkInit();
-                });
+                if ( scLength === 0 && ! isInitialized ) checkStartInit();
             };
 
             // default $.animate() begin and callback hooks
@@ -115,11 +117,11 @@
             // helper method: resizes slide scope to slide with index "slideIndex" with "speed" milliseconds
             var resizeTo = function(speed, sliderWrapper, slideIndex) {
                 var slidesWrapper = sliderWrapper.children().eq(0);
-                var imageObject = slidesWrapper.children().eq(slideIndex).find("img");
+                var contentItem = slidesWrapper.children().eq(slideIndex);
                 defaultAnimBegin.call(slidesWrapper);
                 sliderWrapper.animate({
-                    width: imageObject.outerWidth(),
-                    height: imageObject.outerHeight()
+                    width: contentItem.outerWidth(),
+                    height: contentItem.outerHeight()
                 }, parseInt(speed), function() {
                     defaultAnimCallback.call(slidesWrapper);
                 });

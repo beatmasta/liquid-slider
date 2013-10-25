@@ -2,49 +2,52 @@
 <html>
 <head>
     <title>liquidSlider test</title>
+    <link rel="stylesheet" type="text/css" href="jquery.liquidSlider.demo.css" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="jquery.liquidSlider.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $("ul").liquidSlider({
-                resizeSpeed: 2000,
-                prevButtonLabel: "<",
-                nextButtonLabel: ">"
+                resizeSpeed: 500,
+                prevButtonLabel: "previous",
+                nextButtonLabel: "next"
             });
         });
     </script>
 </head>
 <body>
-    <ul class="test1">
-        <li>
-            <img src="http://placehold.it/100x200.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/200x350.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/190x200.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/210x150.png" />
-        </li>
-    </ul>
-    <br />
-    <br />
-    <br />
-    <ul class="test2">
-        <li>
-            <img src="http://placehold.it/100x200.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/200x350.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/190x200.png" />
-        </li>
-        <li>
-            <img src="http://placehold.it/210x150.png" />
-        </li>
-    </ul>
+    <div class="slider-wrap-1">
+        <ul class="test1">
+            <li>
+                <img src="http://placehold.it/100x200.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/200x350.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/190x200.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/210x150.png" />
+            </li>
+        </ul>
+    </div>
+    <div class="clear"></div>
+    <div class="slider-wrap-2">
+        <ul class="test2">
+            <li>
+                <img src="http://placehold.it/100x200.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/200x350.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/190x200.png" />
+            </li>
+            <li>
+                <img src="http://placehold.it/210x150.png" />
+            </li>
+        </ul>
+    </div>
 </body>
 </html>
