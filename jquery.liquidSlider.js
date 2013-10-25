@@ -25,7 +25,7 @@
                 prevButtonLabel: "",
                 nextButtonLabel: "",
                 onLoad: null,
-				onContentItemLoad: null,
+                onContentItemLoad: null,
                 onNextSlide: null,
                 onPrevSlide: null,
                 onSlideChange: null,
