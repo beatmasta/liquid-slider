@@ -33,7 +33,7 @@ Callbacks
 =======
 
 **onLoad()** - callback function called on plugin initialized state (when all images have been loaded and slider is ready to use)  
-**onImageLoad()** - is called when each single image has been loaded  
+**onContentItemLoad()** - is called when each single content item (image or iframe) has been loaded  
 **onPrevSlide()** - is called after navigation to previous slide has been complete  
 **onBeforePrevSlide()** - called before navigation to previous slide has been started  
 **onNextSlide()** - is called when navigation to the next slide has been complete  

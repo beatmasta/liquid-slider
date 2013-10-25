@@ -25,7 +25,7 @@
                 prevButtonLabel: "",
                 nextButtonLabel: "",
                 onLoad: null,
-				onContentItemsLoaded: null,
+				onContentItemLoad: null,
                 onNextSlide: null,
                 onPrevSlide: null,
                 onSlideChange: null,
@@ -49,7 +49,7 @@
                 // attach the onLoad event handler to the slider content items
                 var scLength = sliderContentItems.not(function() { return this.complete; })
                     .bind("load", function() {
-                    if ( typeof opts.onContentItemsLoaded === "function" ) opts.onContentItemsLoaded.call($(this));
+                    if ( typeof opts.onContentItemLoad === "function" ) opts.onContentItemLoad.call($(this));
                     if ( --scLength === 0 ) checkStartInit();
                 }).length;
 
