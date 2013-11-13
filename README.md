@@ -29,6 +29,18 @@ Options
 **nextButtonLabel** - [default: ""] - string value to have as a label for next slide button (leave empty to have empty button, e.g. if you have image instead of character/text)  
 **removeNavOnLastSlide** - true|false [default: true] - specifies whether to remove the next/prev navigation control button when the last/first slide has been reached  
 **contentSelectors** - [default: "img, iframe"] - string value to define possible slider content items (item types); this is definition on which items load event will be processed, also...
+mobile
+------
+**swipe** - true|false [default: false] - boolean value indicating whether to enable "swap to slide" behavior on mobile devices
+*example:*
+$("ul").liquidSlider({
+    resizeSpeed: 500,
+    prevButtonLabel: "previous",
+    nextButtonLabel: "next",
+    mobile: {
+        swipe: true
+    }
+});
 
 Callbacks
 =======

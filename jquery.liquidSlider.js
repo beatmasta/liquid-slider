@@ -25,6 +25,9 @@
                 prevButtonLabel: "",
                 nextButtonLabel: "",
                 contentSelectors: "img, iframe",
+                mobile: {
+                    swipe: false
+                },
                 onLoad: null,
                 onContentItemLoad: null,
                 onNextSlide: null,
@@ -100,6 +103,7 @@
                     resizeTo(opts.initialResizeSpeed, sliderWrapper, firstSlideIndex);
                     // check if "navigation" option is enabled to add next/prev buttons
                     if ( true === opts.navigation ) addNavigation(opts, sliderWrapper);
+                    if ( true === opts.mobile.swipe ) addMobileTriggers(opts, sliderWrapper);
                     slideIndexCheck(sliderWrapper);
 
                     if ( typeof opts.onLoad === "function" ) opts.onLoad.call($this);
@@ -144,6 +148,20 @@
                     e.preventDefault();
                     navigateToSlide( opts, sliderWrapper, 1 );
                 }).insertAfter(sliderWrapper);
+            };
+
+            // method to add jQUery triggers for mobile devices
+            var addMobileTriggers = function(opts, sliderWrapper) {
+                if ( $.mobile ) {
+                    $this.bind("swiperight", function(e) {
+                        e.preventDefault();
+                        navigateToSlide( opts, sliderWrapper, -1 );
+                    });
+                    $this.bind("swipeleft", function(e) {
+                        e.preventDefault();
+                        navigateToSlide( opts, sliderWrapper, 1 );
+                    });
+                }
             };
 
             // slide nagivation generic function - direction depends on "delta" var
