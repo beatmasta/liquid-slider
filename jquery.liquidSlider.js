@@ -4,7 +4,7 @@
  * according to current item content on each slide step.
  *
  * Copyright (c) 2013 Alex Vanyan (http://alex-v.net)
- * Version: 1.1
+ * Version: 2.1
  * Requires: jQuery v1.4.2+
  *
  */
