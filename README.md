@@ -33,7 +33,7 @@ Options
 ### mobile
 **swipe** - true|false [default: false] - boolean value indicating whether to enable "swap to slide" behavior on mobile devices
 *example:*
-```html
+```javascript
 $("ul").liquidSlider({
     resizeSpeed: 500,
     prevButtonLabel: "previous",
