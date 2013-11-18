@@ -116,7 +116,7 @@
                 $this.children().each(function() {
                     childrenWidth += $(this).outerWidth(true);
                 });
-                $this.css("width", childrenWidth);
+                $this.css("width", childrenWidth + 1);
             };
 
             // default $.animate() begin and callback hooks
